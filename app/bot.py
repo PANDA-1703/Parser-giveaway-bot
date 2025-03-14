@@ -109,7 +109,7 @@ async def post_init(application):
     """Выполняется после инициализации приложения."""
     bot_instance = application.bot
     application.create_task(run_scheduler_background(bot_instance))
-    application.create_task(run_auto_handler())  # Запускаем автоматический обработчик
+    # application.create_task(run_auto_handler())  # Запускаем автоматический обработчик
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ import logging
 from database import add_giveaway
 
 # Создание клиента Telethon
-client = TelegramClient("raffle_participant", API_ID, API_HASH)
+client = TelegramClient("raffle_participant", API_ID, API_HASH, connection_retries=5)
 
 # Логирование
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -25,7 +25,7 @@ async def random_delay(min_seconds=300, max_seconds=1800):
     await asyncio.sleep(delay)
 
     if random.random() < 0.3:  # 30% шанс добавить еще одну короткую задержку
-        extra_delay = random.randint(30, 120)
+        extra_delay = random.randint(10, 60)
         logger.info(f"Дополнительная задержка: {extra_delay} секунд.")
         await asyncio.sleep(extra_delay)
 
@@ -37,7 +37,7 @@ async def join_channel(channel_username):
         logger.info(f"Успешно подписан на канал @{channel_username}")
         return True
     except FloodWaitError as e:
-        wait_time = e.seconds + random.randint(120, 1800)
+        wait_time = e.seconds + random.randint(60, 300)
         logger.warning(f"Слишком много запросов. Ожидание {wait_time} секунд.")
         await asyncio.sleep(wait_time)
         return False
@@ -77,7 +77,7 @@ async def handle_new_message(event):
     logger.info(f"Новое сообщение: {text}")
 
     # Поиск ссылок на каналы
-    channel_links = re.findall(r"t\.me/(\w+)", text) + re.findall(r"@(\w+)", text)
+    channel_links = re.findall(r"https://t\.me/(\w+)", text) + re.findall(r"@(\w+)", text)
 
     # Поиск кнопок
     buttons = []
